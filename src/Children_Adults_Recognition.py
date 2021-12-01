@@ -31,9 +31,9 @@ y_adults_train = np.ones(len(x_adults_train), dtype=int)
 y_adults_test = np.ones(len(x_adults_test), dtype=int)
 
 # combine training set and testing set
-x_train = x_children_train + x_adults_train
+x_train = np.array(x_children_train + x_adults_train)
 y_train = np.append(y_children_train, y_adults_train)
-x_test = x_children_test + x_adults_test
+x_test = np.array(x_children_test + x_adults_test)
 y_test = np.append(y_children_test, y_adults_test)
 
 print(len(x_train))
