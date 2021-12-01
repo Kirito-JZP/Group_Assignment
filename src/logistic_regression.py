@@ -38,7 +38,6 @@ if __name__ == '__main__':
     Children_train = "Image/Children_train"
     Adults_test = "Image/Adults_test"
     Adults_train = "Image/Adults_train"
-
     # read image from each group
     x_children_train = read_img_batch(Children_train)
     x_children_test = read_img_batch(Children_test)
