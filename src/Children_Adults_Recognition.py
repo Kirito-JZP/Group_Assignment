@@ -8,12 +8,18 @@ Adults_test = "Image/Adults_test"
 Adults_train = "Image/Adults_train"
 
 
+def convert_to_grayscale(rgb_img):
+    y_cb_cr_img = rgb_img.convert('YCbCr')
+    y, cb, cr = y_cb_cr_img.split()
+    return y
+
+
 def read_img_batch(path, endpoint=None):
     container = []
     for root, dirs, files in os.walk(path):
         for file in files:
             path = os.path.join(root, file)
-            container.append(cv.imread(path))
+            container.append(convert_to_grayscale(cv.imread(path)))
     return container
 
 
