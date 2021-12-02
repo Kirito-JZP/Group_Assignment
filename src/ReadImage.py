@@ -1,5 +1,5 @@
 import numpy as np
-import cv2 as cv
+from PIL import Image
 import os
 
 Children_test = "Image/Children_test"
@@ -19,7 +19,7 @@ def read_img_batch(path, endpoint=None):
     for root, dirs, files in os.walk(path):
         for file in files:
             path = os.path.join(root, file)
-            container.append(convert_to_grayscale(cv.imread(path)))
+            container.append(convert_to_grayscale(Image.open(path)))
     return container
 
 
