@@ -1,4 +1,5 @@
 import os
+import shutil
 import math
 import operator
 import datetime
@@ -87,11 +88,7 @@ def process_all(imgs):
 def clean_results():
     cwd = os.getcwd().replace('\\', '/')
     if os.path.exists('{}/data/cleaned'.format(cwd)):
-        for batch_dir in os.listdir('{}/data/cleaned'.format(cwd)):
-            for filename in os.listdir('{}/data/cleaned/{}'.format(cwd, batch_dir)):
-                os.remove('{}/data/cleaned/{}/{}'.format(cwd, batch_dir, filename))
-            os.removedirs('{}/data/cleaned/{}/'.format(cwd, batch_dir))
-        os.removedirs('{}/data/cleaned')
+        shutil.rmtree('{}/data/cleaned'.format(cwd))
 
 def get_page_num():
     result = 0
