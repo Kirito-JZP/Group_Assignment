@@ -1,10 +1,11 @@
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, roc_curve
+from scikitplot.metrics import plot_confusion_matrix
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2 as cv
 import os
+
 
 def train_lr(x, y):
     lr_model = LogisticRegression(penalty='none', solver='lbfgs', max_iter=10000).fit(x, y)
@@ -17,12 +18,12 @@ def train_lr(x, y):
             theta.append(lr_model.coef_[0][i - 1])
     return (lr_model, theta)
 
+
 def read_img_batch(path, endpoint=None):
+    cwd = os.getcwd().replace('\\', '/')
     container = []
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            path = os.path.join(root, file)
-            container.append((cv.imread(path, cv.IMREAD_GRAYSCALE)))
+    for filename in os.listdir('{}/src/{}'.format(cwd, path)):
+        container.append((cv.imread('{}/src/{}/{}'.format(cwd, path, filename), cv.IMREAD_GRAYSCALE)))
     return container
 
 
@@ -56,13 +57,22 @@ if __name__ == '__main__':
     y_train = np.append(y_children_train, y_adults_train)
     x_test = np.array(x_children_test + x_adults_test)
     y_test = np.append(y_children_test, y_adults_test)
-    
+
     model, _ = train_lr(convert_to_vector(x_train), convert_to_vector(y_train))
 
     pred = model.predict(convert_to_vector(x_test))
     accuracy = (pred == y_test).astype(int).sum()/pred.size
-    cm_lr = confusion_matrix(y_test, pred)
-    print(accuracy)
-    print(cm_lr.ravel())
+    cm_lr = confusion_matrix(y_test, model.predict(convert_to_vector(x_test)))
+    tn, fp, fn, tp = cm_lr.ravel()
+    print("tn: {}, fp: {}, fn: {}, tp: {}".format(tn, fp, fn, tp))
+    print("accuracy: {}".format((tn + tp) / (tn + tp + fn + fp)))
 
+    plot_confusion_matrix(y_test, pred)
 
+    fpr, tpr, _ = roc_curve(
+        y_test, model.decision_function(convert_to_vector(x_test)))
+    plt.plot(fpr, tpr)
+    plt.xlabel('False positive rate')
+    plt.ylabel('True positive rate')
+    plt.plot([0, 1], [0, 1], color='green', linestyle='--')
+    plt.show()
