@@ -10,58 +10,19 @@ from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.utils import shuffle
 import matplotlib.pyplot as plt
 import sys
-
-Children_test = "Image/Children_test"
-Children_train = "Image/Children_train"
-Adults_test = "Image/Adults_test"
-Adults_train = "Image/Adults_train"
+import ReadImage as RI
 
 
-def read_img_batch(path, endpoint=None):
-    container = []
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            path = os.path.join(root, file)
-            container.append(cv.imread(path, cv.IMREAD_GRAYSCALE))
-    return container
-
-
-# read image from each group
-x_children_train = read_img_batch(Children_train)
-x_children_test = read_img_batch(Children_test)
-x_adults_train = read_img_batch(Adults_train)
-x_adults_test = read_img_batch(Adults_test)
-
-# set label according to each image set
-# children 0; adults 1
-y_children_train = np.zeros(len(x_children_train), dtype=int)
-y_children_test = np.zeros(len(x_children_test), dtype=int)
-y_adults_train = np.ones(len(x_adults_train), dtype=int)
-y_adults_test = np.ones(len(x_adults_test), dtype=int)
-
-def normalizeData(data):
-    data = np.array(data)
-    data = data.astype('float32')
-    data = data / 255
-    return data
-
-# combine training set and testing set
-x_train = x_children_train + x_adults_train
-x_train = normalizeData(x_train)
-y_train = np.append(y_children_train, y_adults_train)
-x_test = x_children_test + x_adults_test
-x_test = normalizeData(x_test)
-y_test = np.append(y_children_test, y_adults_test)
-
+x_train, y_train, x_test, y_test = RI.make_dataset()
 y_train = keras.utils.to_categorical(y_train, 2)
 y_test = keras.utils.to_categorical(y_test, 2)
 
-print(y_train.shape)
+print(y_train)
 
 #Train model
 use_saved_model = False
 if use_saved_model:
-    model = keras.models.load_model("cifar.model")
+    model = keras.models.load_model("CNN.model")
 else:
     model = keras.Sequential()
     model.add(Conv2D(8,(3,3),padding='same',input_shape=(48,48,3),activation='relu'))
@@ -82,10 +43,10 @@ else:
     model.compile(loss="categorical_crossentropy", optimizer='adam', metrics=["accuracy"])
     model.summary()
 
-    batch_size = 128
+    batch_size = 64
     epochs = 20
     history = model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_data=(x_test, y_test))
-    model.save("cifar.model")
+    model.save("CNN.model")
     plt.subplot(121)
     plt.plot(history.history['accuracy'])
     plt.plot(history.history['val_accuracy'])

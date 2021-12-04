@@ -19,12 +19,14 @@ def read_img_batch(path, endpoint=None):
     for root, dirs, files in os.walk(path):
         for file in files:
             path = os.path.join(root, file)
-            container.append(convert_to_grayscale(Image.open(path)))
+            pic = Image.open(path)
+            pic = np.array(convert_to_grayscale(pic))
+            pic = np.reshape(pic, (48, 48, 1))
+            container.append(pic)
     return container
 
 
 def make_dataset():
-    # read image  c                                                                                                                       v       rom each group
     x_children_train = read_img_batch(Children_train)
     x_children_test = read_img_batch(Children_test)
     x_adults_train = read_img_batch(Adults_train)
