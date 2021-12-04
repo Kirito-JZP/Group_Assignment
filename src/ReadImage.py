@@ -23,7 +23,7 @@ def read_img_batch(path, endpoint=None):
             pic = np.array(convert_to_grayscale(pic))
             pic = np.reshape(pic, (48, 48, 1))
             container.append(pic)
-    return container
+    return np.array(container)
 
 
 def make_dataset():
@@ -40,8 +40,8 @@ def make_dataset():
     y_adults_test = np.ones(len(x_adults_test), dtype=int)
 
     # combine training set and testing set
-    x_train = x_children_train + x_adults_train
+    x_train = np.append(x_children_train, x_adults_train).reshape(14400, 48, 48, 1)
     y_train = np.append(y_children_train, y_adults_train)
-    x_test = x_children_test + x_adults_test
+    x_test = np.append(x_children_test, x_adults_test).reshape(3600, 48, 48, 1)
     y_test = np.append(y_children_test, y_adults_test)
     return x_train, y_train, x_test, y_test
