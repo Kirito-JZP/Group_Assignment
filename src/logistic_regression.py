@@ -1,6 +1,7 @@
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, roc_curve
 from scikitplot.metrics import plot_confusion_matrix
+import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2 as cv
@@ -35,6 +36,7 @@ def convert_to_vector(imgs):
 
 
 if __name__ == '__main__':
+    ts = datetime.datetime.now()
     Children_test = "Image/Children_test"
     Children_train = "Image/Children_train"
     Adults_test = "Image/Adults_test"
@@ -71,8 +73,11 @@ if __name__ == '__main__':
 
     fpr, tpr, _ = roc_curve(
         y_test, model.decision_function(convert_to_vector(x_test)))
-    plt.plot(fpr, tpr)
-    plt.xlabel('False positive rate')
-    plt.ylabel('True positive rate')
-    plt.plot([0, 1], [0, 1], color='green', linestyle='--')
-    plt.show()
+    fig = plt.figure()
+    fig.plot(fpr, tpr)
+    fig.xlabel('False positive rate')
+    fig.ylabel('True positive rate')
+    fig.plot([0, 1], [0, 1], color='green', linestyle='--')
+    fig.show()
+    te = datetime.datetime.now()
+    print("time elapsed: {}s".format((te - ts).total_seconds()))
