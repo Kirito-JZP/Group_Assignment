@@ -1,4 +1,3 @@
-from datetime import datetime
 from tensorflow import keras
 from tensorflow.keras import regularizers
 from keras.layers import Dense, Dropout, Flatten
@@ -12,7 +11,7 @@ x_train, y_train, x_test, y_test = RI.make_dataset()
 y_train = keras.utils.to_categorical(y_train, 2)
 y_test = keras.utils.to_categorical(y_test, 2)
 
-#Train model
+# Train model
 use_saved_model = False
 if use_saved_model:
     model = keras.models.load_model("CNN.model")

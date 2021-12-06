@@ -1,4 +1,3 @@
-from operator import mod
 from sklearn.linear_model import LogisticRegression
 from sklearn.decomposition import PCA
 from sklearn.model_selection import cross_val_score
@@ -6,9 +5,8 @@ from sklearn.metrics import confusion_matrix, roc_curve, f1_score, log_loss
 from scikitplot.metrics import plot_confusion_matrix
 import numpy as np
 import matplotlib.pyplot as plt
-import os
 import datetime
-from PIL import Image
+import ReadImage as RI
 
 
 def train_lr(x, y, C=1, penalty='none', solver='lbfgs'):
@@ -23,21 +21,6 @@ def cross_validation(model, x, y, cv):
     std_dev = np.array(scores).std()
     return (mean_score, std_dev)
 
-def convert_to_grayscale(rgb_img):
-    y_cb_cr_img = rgb_img.convert('YCbCr')
-    y, cb, cr = y_cb_cr_img.split()
-    return y
-
-def read_img_batch(path, endpoint=None):
-    cwd = os.getcwd().replace('\\', '/')
-    container = []
-    for filename in os.listdir('{}/src/{}'.format(cwd, path)):
-        pic = Image.open('{}/src/{}/{}'.format(cwd, path, filename))
-        pic = np.array(convert_to_grayscale(pic))
-        pic = np.reshape(pic, (48, 48, 1))
-        container.append(pic)
-    return container
-
 
 def convert_to_vector(imgs):
     ret = []
@@ -45,11 +28,12 @@ def convert_to_vector(imgs):
         ret.append(img.reshape(img.size))
     return np.array(ret)
 
+
 def get_pca():
     Children_train = "Image/Children_train"
     Adults_train = "Image/Adults_train"
-    x_children_train = read_img_batch(Children_train)
-    x_adults_train = read_img_batch(Adults_train)
+    x_children_train = RI.read_img_batch(Children_train)
+    x_adults_train = RI.read_img_batch(Adults_train)
     x_train = np.array(x_children_train + x_adults_train)
     pca = PCA(917)
     pca.fit(convert_to_vector(x_train))
@@ -80,30 +64,9 @@ def find_dimension(imgs):
             n_components += 100
     return n_components
 
+
 def get_plot_data():
-    Children_test = "Image/Children_test"
-    Children_train = "Image/Children_train"
-    Adults_test = "Image/Adults_test"
-    Adults_train = "Image/Adults_train"
-
-    # read image from each group
-    x_children_train = read_img_batch(Children_train)
-    x_children_test = read_img_batch(Children_test)
-    x_adults_train = read_img_batch(Adults_train)
-    x_adults_test = read_img_batch(Adults_test)
-
-    # set label according to each image set
-    # children 0; adults 1
-    y_children_train = np.zeros(len(x_children_train), dtype=int)
-    y_children_test = np.zeros(len(x_children_test), dtype=int)
-    y_adults_train = np.ones(len(x_adults_train), dtype=int)
-    y_adults_test = np.ones(len(x_adults_test), dtype=int)
-
-     # combine training set and testing set
-    x_train = np.array(x_children_train + x_adults_train)
-    y_train = np.append(y_children_train, y_adults_train)
-    x_test = np.array(x_children_test + x_adults_test)
-    y_test = np.append(y_children_test, y_adults_test)
+    x_train, y_train, x_test, y_test = RI.make_dataset()
 
     pca = PCA(917)
     pca.fit(convert_to_vector(x_train))
@@ -114,31 +77,10 @@ def get_plot_data():
 
     return (fpr, tpr)
 
+
 if __name__ == '__main__':
     ts = datetime.datetime.now()
-    Children_test = "Image/Children_test"
-    Children_train = "Image/Children_train"
-    Adults_test = "Image/Adults_test"
-    Adults_train = "Image/Adults_train"
-
-    # read image from each group
-    x_children_train = read_img_batch(Children_train)
-    x_children_test = read_img_batch(Children_test)
-    x_adults_train = read_img_batch(Adults_train)
-    x_adults_test = read_img_batch(Adults_test)
-
-    # set label according to each image set
-    # children 0; adults 1
-    y_children_train = np.zeros(len(x_children_train), dtype=int)
-    y_children_test = np.zeros(len(x_children_test), dtype=int)
-    y_adults_train = np.ones(len(x_adults_train), dtype=int)
-    y_adults_test = np.ones(len(x_adults_test), dtype=int)
-
-    # combine training set and testing set
-    x_train = np.array(x_children_train + x_adults_train)
-    y_train = np.append(y_children_train, y_adults_train)
-    x_test = np.array(x_children_test + x_adults_test)
-    y_test = np.append(y_children_test, y_adults_test)
+    x_train, y_train, x_test, y_test = RI.make_dataset()
 
     # find #component
     n_components = find_dimension(x_train)
