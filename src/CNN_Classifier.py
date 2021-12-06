@@ -1,4 +1,3 @@
-import numpy as np
 import cv2 as cv
 import os
 import tensorflow as tf
@@ -7,11 +6,10 @@ from tensorflow.keras import layers, regularizers
 from keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D
 from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.utils import shuffle
 import matplotlib.pyplot as plt
 import sys
 import ReadImage as RI
-
+from keras.optimizers import Adam,SGD
 
 x_train, y_train, x_test, y_test = RI.make_dataset()
 y_train = keras.utils.to_categorical(y_train, 2)
@@ -40,24 +38,11 @@ else:
     model.add(Dropout(0.5))
     model.add(Flatten())
     model.add(Dense(2,activation='softmax', kernel_regularizer=regularizers.l1(0.0001)))
-    model.compile(loss="categorical_crossentropy", optimizer='adam', metrics=["accuracy"])
+    opt = Adam(lr=0.0001, decay=1e-6)
+    model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
     model.summary()
 
     batch_size = 64
-    epochs = 20
+    epochs = 30
     history = model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_data=(x_test, y_test))
     model.save("CNN.model")
-    plt.subplot(121)
-    plt.plot(history.history['accuracy'])
-    plt.plot(history.history['val_accuracy'])
-    plt.title('model accuracy')
-    plt.ylabel('accuracy')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'val'], loc='upper left')
-    plt.subplot(122)
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
-    plt.title('model loss')
-    plt.ylabel('loss'); plt.xlabel('epoch')
-    plt.legend(['train', 'val'], loc='upper left')
-    plt.show()
