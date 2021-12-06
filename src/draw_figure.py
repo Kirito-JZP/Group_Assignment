@@ -48,6 +48,7 @@ plt.xlabel('False positive rate')
 plt.ylabel('True positive rate')
 plt.title('Roc for prediction using CNN')
 plt.plot([0, 1], [0, 1], color='green',linestyle='--')
+
 # obtain fpr and tpr of the logistic regression model
 fpr, tpr = LR.get_plot_data()
 plt.plot(fpr, tpr, label='Logistic Regression')
