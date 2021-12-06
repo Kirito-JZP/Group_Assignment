@@ -36,7 +36,6 @@ plt.show()
 
 # visualise the confusion matrix for the CNN model
 yhat_valid = model.predict_classes(x_test)
-yhat_valid = (model.predict(x_test) > 0.5).astype("int32")
 scikitplot.metrics.plot_confusion_matrix(np.argmax(y_test, axis=1), yhat_valid)
 plt.title('Confusion Matrix for prediction using CNN')
 plt.show()

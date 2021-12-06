@@ -1,23 +1,16 @@
-import numpy as np
-import cv2 as cv
-import os
-import tensorflow as tf
+from datetime import datetime
 from tensorflow import keras
-from tensorflow.keras import layers, regularizers
-from keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization
+from tensorflow.keras import regularizers
+from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
-from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.utils import shuffle
 import matplotlib.pyplot as plt
-import sys
 import ReadImage as RI
+import datetime
 
-
+ts = datetime.datetime.now()
 x_train, y_train, x_test, y_test = RI.make_dataset()
 y_train = keras.utils.to_categorical(y_train, 2)
 y_test = keras.utils.to_categorical(y_test, 2)
-
-print(y_train)
 
 #Train model
 use_saved_model = False
@@ -60,4 +53,6 @@ else:
     plt.title('model loss')
     plt.ylabel('loss'); plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
+    te = datetime.datetime.now()
+    print('time elapsed: {}s'.format((te - ts).total_seconds()))
     plt.show()
